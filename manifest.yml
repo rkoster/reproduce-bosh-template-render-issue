@@ -1,0 +1,31 @@
+name: sap-bosh-841
+instance_groups:
+- azs: [z1]
+  instances: 1
+  jobs:
+  - name: pre-start-script
+    release: os-conf
+    properties:
+      script: |-
+        #!/bin/bash
+        echo "started"
+  name: debug
+  networks:
+  - name: default
+  stemcell: default
+  vm_type: default
+releases:
+- name: "os-conf"
+  version: "22.1.0"
+  url: "https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=22.1.0"
+  sha1: "7ef05f6f3ebc03f59ad8131851dbd1abd1ab3663"
+variables: []
+stemcells:
+- alias: default
+  os: ubuntu-xenial
+  version: latest
+update:
+  canaries: 2
+  canary_watch_time: 5000-60000
+  max_in_flight: 1
+  update_watch_time: 5000-60000

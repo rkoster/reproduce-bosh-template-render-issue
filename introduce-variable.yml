@@ -1,0 +1,12 @@
+- type: replace
+  path: /instance_groups/name=debug/jobs/name=pre-start-script/properties/script
+  value: |-
+    #!/bin/bash
+    echo "((password))"
+    exit 1
+
+- type: replace
+  path: /variables
+  value:
+    - name: password
+      type: password
