@@ -9,6 +9,33 @@ instance_groups:
       script: |-
         #!/bin/bash
         echo "started"
+  - name: nginx
+    release: nginx
+    properties:
+      nginx_conf: |-
+        user nobody vcap; # group vcap can read most directories
+        worker_processes  1;
+        error_log /var/vcap/sys/log/nginx/error.log   info;
+        events {
+          worker_connections  1024;
+        }
+        http {
+          include /var/vcap/packages/nginx/conf/mime.types;
+          default_type  application/octet-stream;
+          sendfile        on;
+          ssi on;
+          keepalive_timeout  65;
+          server_names_hash_bucket_size 64;
+          server {
+            server_name _; # invalid value which will never trigger on a real hostname.
+            listen *:80;
+            # FIXME: replace all occurrences of 'example.com' with your server's FQDN
+            access_log /var/vcap/sys/log/nginx/example.com-access.log;
+            error_log /var/vcap/sys/log/nginx/example.com-error.log;
+            root /var/vcap/data/nginx/document_root;
+            index index.shtml;
+          }
+        }
   name: debug
   networks:
   - name: default
@@ -19,6 +46,10 @@ releases:
   version: "22.1.0"
   url: "https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=22.1.0"
   sha1: "7ef05f6f3ebc03f59ad8131851dbd1abd1ab3663"
+- name: "nginx"
+  version: "1.19.1"
+  url: "https://bosh.io/d/github.com/cloudfoundry-community/nginx-release?v=1.19.1"
+  sha1: "1731de7995b785f314e87f54f2e29d3668f0b27f"
 variables: []
 stemcells:
 - alias: default
